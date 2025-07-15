@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -25,8 +26,9 @@ SECRET_KEY = 'django-insecure-s225$mvbthtrl(=qum1!0+5@$z0g@@1b^0u773nri@gu^2#47$
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = ['172.16.10.74', 'localhost'] #poner otra ip para que funcione en otro dispositivo
+GLOBAL_IP = 'localhost'
+GLOBAL_HOST = '8000'
+ALLOWED_HOSTS = [GLOBAL_IP] #poner otra ip para que funcione en otro dispositivo
 
 
 # Application definition
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'users',
     'authentication',  
     'roles',
@@ -110,12 +113,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+        'authentication.customJWTAuthentication.CustomJWTAuthentication',  # Custom JWT authentication class
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), #duracion del token 
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=3), #duracion del token 
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -147,3 +153,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

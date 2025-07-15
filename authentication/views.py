@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-
+from django.conf import settings
 import bcrypt
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework import status
 from roles.models import Role
 from roles.serializers import RoleSerializer
@@ -11,6 +12,7 @@ from users.serializer import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 @api_view(['POST'])
+@permission_classes([AllowAny]) 
 def register(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
@@ -37,10 +39,16 @@ def register(request):
     }
     return Response(error_response, status=status.HTTP_400_BAD_REQUEST)
 
-
-    
+def getCustomTokenForUser(user):
+    refresh_token = RefreshToken.for_user(user)
+    del refresh_token['user_id']  
+    refresh_token.payload['id'] = user.id
+    refresh_token.payload['name'] = user.name
+    return refresh_token
+ 
  
 @api_view(['POST'])
+@permission_classes([AllowAny]) 
 def login(request):
     email = request.data.get('email')
     password = request.data.get('password')
@@ -68,7 +76,7 @@ def login(request):
     try:
         # Verificar si la contraseña es válida
         if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            refresh_token = RefreshToken.for_user(user)
+            refresh_token = getCustomTokenForUser(user)
             access_token = str(refresh_token.access_token)
             
             # Obtener los roles del usuario
@@ -82,11 +90,11 @@ def login(request):
                     "lastname": user.lastname,
                     "email": user.email,
                     "phone": user.phone,
-                    "image": user.image,
+                    "image": f'http://{settings.GLOBAL_IP}:{settings.GLOBAL_HOST}{user.image}' if user.image else None,
                     "notification_token": user.notification_token,
                     "roles": roles_serializer.data
                 },
-                "token": 'bearer ' + access_token
+                "token": 'Bearer ' + access_token
             }
             return Response(user_data, status=status.HTTP_200_OK)
         else:
@@ -123,7 +131,7 @@ def login(request):
                     "notification_token": user.notification_token,
                     "roles": roles_serializer.data
                 },
-                "token": 'bearer ' + access_token
+                "token": 'Bearer ' + access_token
             }
             return Response(user_data, status=status.HTTP_200_OK)
         else:
