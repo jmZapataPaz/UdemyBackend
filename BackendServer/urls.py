@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('users.urls')),
     path('auth/',include('authentication.urls')),
+    path('categories/', include('categories.urls')),
     
 ]
 #configuracion para url que interpreten si hay archivos multimedia

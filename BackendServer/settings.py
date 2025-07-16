@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s225$mvbthtrl(=qum1!0+5@$z0g@@1b^0u773nri@gu^2#47$
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-GLOBAL_IP = 'localhost'
+GLOBAL_IP = '172.16.10.124'
 GLOBAL_HOST = '8000'
 ALLOWED_HOSTS = [GLOBAL_IP] #poner otra ip para que funcione en otro dispositivo
 
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users',
     'authentication',  
     'roles',
+    'categories',
 ]
 
 MIDDLEWARE = [
