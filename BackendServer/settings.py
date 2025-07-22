@@ -23,12 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-s225$mvbthtrl(=qum1!0+5@$z0g@@1b^0u773nri@gu^2#47$'
+STRIPE_SECRET_KEY = 'sk_test_51Rngb8JgO84GXX7Xm4YgRyjhBXegzENVRzxbz3lktVWzDEj1oiNuQv0swW4UBiiZxKcfZcyet1Hrz04wNZLXbrWo00sTUSlCVe'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 GLOBAL_IP = '172.16.10.124'
-GLOBAL_HOST = '8000'
-ALLOWED_HOSTS = [GLOBAL_IP] #poner otra ip para que funcione en otro dispositivo
+NGROK_URL = '667a0f27742a.ngrok-free.app'
+GLOBAL_HOST = '3000'
+ALLOWED_HOSTS = [GLOBAL_IP, NGROK_URL] 
 
 
 # Application definition
@@ -46,6 +48,10 @@ INSTALLED_APPS = [
     'authentication',  
     'roles',
     'categories',
+    'products',
+    'address',
+    'orders',
+    'payment_stripe',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +69,7 @@ ROOT_URLCONF = 'BackendServer.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Redirigiendo</title></head>
+<body>
+  <p>Redirigiendo a la aplicación...</p>
+  {% comment %} PARA MERCADO PAGO {% endcomment %}
+  {% comment %} <a href="myapp://payment/success">Haz clic si no se abre</a>  {% endcomment %}
+  {% comment %} PARA STRIPE {% endcomment %}
+  <a href="myapp://payment_stripe/success">Haz clic si no se abre</a>
+  <script>
+    
+    setTimeout(() => {
+      // PARA MERCADO PAGO
+      //window.location.href = "myapp://payment/success";
+      // PARA STRIPE
+      window.location.href = "myapp://payment_stripe/success";
+    }, 1000);
+  </script>
+</body>
+</html>

@@ -24,6 +24,10 @@ urlpatterns = [
     path('api/', include('users.urls')),
     path('auth/',include('authentication.urls')),
     path('categories/', include('categories.urls')),
+    path('products/', include('products.urls')),
+    path('address/', include('address.urls')),
+    path('orders/', include('orders.urls')),
+    path('payment_stripe/', include('payment_stripe.urls')),
     
 ]
 #configuracion para url que interpreten si hay archivos multimedia
