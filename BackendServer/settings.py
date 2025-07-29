@@ -28,7 +28,7 @@ STRIPE_SECRET_KEY = 'sk_test_51Rngb8JgO84GXX7Xm4YgRyjhBXegzENVRzxbz3lktVWzDEj1oi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 GLOBAL_IP = '172.16.10.124'
-NGROK_URL = '667a0f27742a.ngrok-free.app'
+NGROK_URL = '765014b74ac6.ngrok-free.app'
 GLOBAL_HOST = '3000'
 ALLOWED_HOSTS = [GLOBAL_IP, NGROK_URL] 
 
@@ -52,17 +52,23 @@ INSTALLED_APPS = [
     'address',
     'orders',
     'payment_stripe',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True   
+CORS_ALLOW_CREDENTIALS = True
+
 
 ROOT_URLCONF = 'BackendServer.urls'
 

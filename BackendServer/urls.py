@@ -21,6 +21,7 @@ from BackendServer import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('users/', include('users.urls')),
     path('api/', include('users.urls')),
     path('auth/',include('authentication.urls')),
     path('categories/', include('categories.urls')),
@@ -30,5 +31,4 @@ urlpatterns = [
     path('payment_stripe/', include('payment_stripe.urls')),
     
 ]
-#configuracion para url que interpreten si hay archivos multimedia
 urlpatterns +=  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

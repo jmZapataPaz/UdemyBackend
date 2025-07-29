@@ -210,3 +210,172 @@ def updateWithImage(request, id_user):
         "roles": roles_serializer.data
     }  
     return Response(user_data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def assign_role_to_user(request, id_user):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to assign roles.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            }, 
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    try:
+        user = User.objects.get(id=id_user)
+    except User.DoesNotExist:
+        return Response(
+            {
+                "message": "User not found.",
+                "statusCode": status.HTTP_404_NOT_FOUND
+            }, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    id_rol = request.data.get('id_rol', None)
+    
+    if id_rol is None:
+        return Response(
+            {
+                "message": "Role ID is required.",
+                "statusCode": status.HTTP_400_BAD_REQUEST
+            }, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        role = Role.objects.get(id=id_rol)
+    except Role.DoesNotExist:
+        return Response(
+            {
+                "message": "Role not found.",
+                "statusCode": status.HTTP_404_NOT_FOUND
+            }, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    user_has_role, created = UserHasRoles.objects.get_or_create(
+        id_user=user,
+        id_rol=role
+    )
+    
+    if not created:
+        return Response(
+            {
+                "message": "User already has this role.",
+                "statusCode": status.HTTP_409_CONFLICT
+            }, 
+            status=status.HTTP_409_CONFLICT
+        )
+    
+    roles = Role.objects.filter(userhasroles__id_user=user)
+    roles_serializer = RoleSerializer(roles, many=True)
+    
+    user_data = {       
+        "id": user.id,
+        "name": user.name,
+        "lastname": user.lastname,
+        "email": user.email,
+        "phone": user.phone,
+        "image": f'http://{settings.GLOBAL_IP}:{settings.GLOBAL_HOST}{user.image}' if user.image else None,
+        "notification_token": user.notification_token,
+        "roles": roles_serializer.data
+    }
+    
+    return Response(
+        {
+            "message": "Role assigned successfully.",
+            "user": user_data,
+            "statusCode": status.HTTP_201_CREATED
+        }, 
+        status=status.HTTP_201_CREATED
+    )
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def remove_role_from_user(request, id_user, role_id):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to remove roles.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            }, 
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    try:
+        user = User.objects.get(id=id_user)
+    except User.DoesNotExist:
+        return Response(
+            {
+                "message": "User not found.",
+                "statusCode": status.HTTP_404_NOT_FOUND
+            }, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    try:
+        role = Role.objects.get(id=role_id)
+    except Role.DoesNotExist:
+        return Response(
+            {
+                "message": "Role not found.",
+                "statusCode": status.HTTP_404_NOT_FOUND
+            }, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    try:
+        user_has_role = UserHasRoles.objects.get(id_user=user, id_rol=role)
+        user_has_role.delete()
+    except UserHasRoles.DoesNotExist:
+        return Response(
+            {
+                "message": "User does not have this role.",
+                "statusCode": status.HTTP_404_NOT_FOUND
+            }, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    roles = Role.objects.filter(userhasroles__id_user=user)
+    roles_serializer = RoleSerializer(roles, many=True)
+    
+    user_data = {       
+        "id": user.id,
+        "name": user.name,
+        "lastname": user.lastname,
+        "email": user.email,
+        "phone": user.phone,
+        "image": f'http://{settings.GLOBAL_IP}:{settings.GLOBAL_HOST}{user.image}' if user.image else None,
+        "notification_token": user.notification_token,
+        "roles": roles_serializer.data
+    }
+    
+    return Response(
+        {
+            "message": "Role removed successfully.",
+            "user": user_data,
+            "statusCode": status.HTTP_200_OK
+        }, 
+        status=status.HTTP_200_OK
+    )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_roles(request):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to view roles.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            }, 
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    roles = Role.objects.all()
+    roles_serializer = RoleSerializer(roles, many=True)
+    
+    return Response(roles_serializer.data, status=status.HTTP_200_OK)
