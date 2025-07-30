@@ -28,7 +28,7 @@ STRIPE_SECRET_KEY = 'sk_test_51Rngb8JgO84GXX7Xm4YgRyjhBXegzENVRzxbz3lktVWzDEj1oi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 GLOBAL_IP = '172.16.10.124'
-NGROK_URL = '765014b74ac6.ngrok-free.app'
+NGROK_URL = 'e9bcfa95f100.ngrok-free.app'
 GLOBAL_HOST = '3000'
 ALLOWED_HOSTS = [GLOBAL_IP, NGROK_URL] 
 

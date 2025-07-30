@@ -2,13 +2,20 @@
 <html>
 <head><title>Redirigiendo</title></head>
 <body>
+  <h2>{{ message }}</h2>
+  <p>Status: {{ statusCode }}</p>
+  <p>Estado del pago: {{ payment_status }}</p>
   <p>Redirigiendo a la aplicación...</p>
   {% comment %} PARA MERCADO PAGO {% endcomment %}
   {% comment %} <a href="myapp://payment/success">Haz clic si no se abre</a>  {% endcomment %}
   {% comment %} PARA STRIPE {% endcomment %}
   <a href="myapp://payment_stripe/success">Haz clic si no se abre</a>
   <script>
-    
+    fetch('/payment_stripe/success?session_id={{ session_id }}&json=1')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Notificación AJAX:', data);
+    });
     setTimeout(() => {
       // PARA MERCADO PAGO
       //window.location.href = "myapp://payment/success";
