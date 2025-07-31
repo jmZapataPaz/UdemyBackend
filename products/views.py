@@ -13,6 +13,15 @@ from products.serializers import ProductSerializer
 @api_view(['POST'])
 @permission_classes([IsAuthenticated]) 
 def create(request):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to update categories.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            },
+            status=status.HTTP_403_FORBIDDEN
+        )
+        
     serializer = ProductSerializer(data=request.data)
     if not serializer.is_valid():
         error_messages = []
@@ -71,6 +80,15 @@ def get_products_by_category(request, id_category):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated]) 
 def delete_by_id_product(request, id_product):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to update categories.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            },
+            status=status.HTTP_403_FORBIDDEN
+        )
+        
     try:
         product = Product.objects.get(id=id_product)
         
@@ -115,6 +133,14 @@ def delete_by_id_product(request, id_product):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated]) 
 def update_by_id_product(request, id_product):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to update categories.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            },
+            status=status.HTTP_403_FORBIDDEN
+        )
     try:
         product = Product.objects.get(id=id_product)
     except Product.DoesNotExist:
@@ -145,9 +171,7 @@ def update_by_id_product(request, id_product):
     if 'files' in request.FILES:
         files = request.FILES.getlist('files')
         
-        # Solo eliminar y reemplazar las imágenes que se están actualizando
         if len(files) >= 1:
-            # Eliminar image1 existente solo si se va a reemplazar
             if product.image1:
                 image1_path = product.image1
                 if image1_path.startswith('/media/'):
@@ -158,13 +182,11 @@ def update_by_id_product(request, id_product):
                 if default_storage.exists(image1_path):
                     default_storage.delete(image1_path)
             
-            # Guardar nueva image1
             file_path1 = f'uploads/products/{product.id}/{files[0].name}'
             saved_path1 = default_storage.save(file_path1, ContentFile(files[0].read()))
             product.image1 = default_storage.url(saved_path1)
         
         if len(files) >= 2:
-            # Eliminar image2 existente solo si se va a reemplazar
             if product.image2:
                 image2_path = product.image2
                 if image2_path.startswith('/media/'):
@@ -175,14 +197,12 @@ def update_by_id_product(request, id_product):
                 if default_storage.exists(image2_path):
                     default_storage.delete(image2_path)
             
-            # Guardar nueva image2
             file_path2 = f'uploads/products/{product.id}/{files[1].name}'
             saved_path2 = default_storage.save(file_path2, ContentFile(files[1].read()))
             product.image2 = default_storage.url(saved_path2)
         
         product.save()
     
-    # Construir URLs completas
     image1_url = request.build_absolute_uri(product.image1) if product.image1 else None
     image2_url = request.build_absolute_uri(product.image2) if product.image2 else None
     

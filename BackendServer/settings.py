@@ -28,7 +28,7 @@ STRIPE_SECRET_KEY = 'sk_test_51Rngb8JgO84GXX7Xm4YgRyjhBXegzENVRzxbz3lktVWzDEj1oi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 GLOBAL_IP = '172.16.10.124'
-NGROK_URL = 'e9bcfa95f100.ngrok-free.app'
+NGROK_URL = '429f6468614d.ngrok-free.app'
 GLOBAL_HOST = '3000'
 ALLOWED_HOSTS = [GLOBAL_IP, NGROK_URL] 
 
@@ -126,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authentication.customJWTAuthentication.CustomJWTAuthentication',  # Custom JWT authentication class
+        'authentication.customJWTAuthentication.CustomJWTAuthentication', 
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -134,8 +134,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=3), #duracion del token 
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=3), #duracion del token 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',

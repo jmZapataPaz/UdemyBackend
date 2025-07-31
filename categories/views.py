@@ -13,6 +13,14 @@ from categories.serializer import CategorySerializer
 @api_view(['POST'])
 @permission_classes([IsAuthenticated]) 
 def create(request):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to create categories.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            },
+            status=status.HTTP_403_FORBIDDEN
+        )
     serializer = CategorySerializer(data=request.data)
     if not serializer.is_valid():
         error_messages = []
@@ -57,16 +65,22 @@ def get_categories(request):
         }
         all_categories_data.append(category_data)
     
-    # Mover el return FUERA del loop para que procese todas las categorías
     return Response(all_categories_data, status=status.HTTP_200_OK)
     
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated]) 
 def delete(request, id_category):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to delete categories.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            },
+            status=status.HTTP_403_FORBIDDEN
+        )
     try:
         category = Category.objects.get(id=id_category)
         
-        # Eliminar la imagen si existe
         if category.image:
             try:
                 image_path = category.image
@@ -112,6 +126,14 @@ def delete(request, id_category):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated]) 
 def update(request, id_category):
+    if not request.user.userhasroles_set.filter(id_rol__id='ADMIN').exists():
+        return Response(
+            {
+                "message": "You do not have permission to update categories.",
+                "statusCode": status.HTTP_403_FORBIDDEN
+            },
+            status=status.HTTP_403_FORBIDDEN
+        )
     try:
         category = Category.objects.get(id=id_category)
         
